@@ -78,14 +78,14 @@ Events:Subscribe('Player:UpdateInput', function()
 		end
 	end
 
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_E) and pointOfAim.mode == FiringMode.Target then
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F) and pointOfAim.mode == FiringMode.Target then
 
-		NetEvents:Send('Airstrike:Launch', pointOfAim.position)
+		NetEvents:SendLocal('vu-tactical-missle:Launch', pointOfAim.position)
 
 		targets[#targets+1] = { position = pointOfAim.position:Clone(), points = {}, timer = MISSILE_AIRTIME }
 	end	
 
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_E) and pointOfAim.mode == FiringMode.Area then
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F) and pointOfAim.mode == FiringMode.Area then
 	
 		AreaStrike(pointOfAim.position)
 
@@ -124,7 +124,7 @@ Events:Subscribe('Engine:Update', function(dt)
 
 			targets[#targets+1] = pending[i]
 
-			NetEvents:Send('Airstrike:Launch', pending[i].position)
+			NetEvents:SendLocal('vu-tactical-missle:Launch', pending[i].position)
 
 			table.remove(pending, i)
 		end
