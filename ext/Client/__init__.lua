@@ -30,7 +30,42 @@ local updateEvent = nil
 local RED = Vec4(1, 0, 0, 0.5)
 local WHITE = Vec4(1, 1, 1, 0.5)
 
-local MISSILE_AIRTIME = 3.3
+local MISSILE_AIRTIME = 4.3
+
+Events:Subscribe("vu-tactical-missile:Disable",function(stepNr)
+	print("Killstreak disabled")
+	pointOfAim.mode = FiringMode.Disabled
+end)
+
+Events:Subscribe("vu-tactical-missile:Invoke",function(stepNr,keyboardKey)
+	print("Killstreak enabled")
+	pointOfAim.mode = FiringMode.Area
+	Events:Subscribe('Player:UpdateInput', function()
+
+		if updateEvent == nil then
+			updateEvent = Events:Subscribe('UpdateManager:Update', OnUpdate)
+		end
+	
+		if drawHudEvent == nil then
+			drawHudEvent = Events:Subscribe('UI:DrawHud', OnDrawHud)
+		end
+	
+		if InputManager:WentKeyDown(InputDeviceKeys.IDK_F) and pointOfAim.mode == FiringMode.Area then
+		
+			AreaStrike(pointOfAim.position)
+	
+			zones[#zones+1] = { position = pointOfAim.position, points = {}, timer = STRIKE_DURATION + MISSILE_AIRTIME}
+			print("Killstreak used")
+			pointOfAim.mode = FiringMode.Disabled
+			Events:Dispatch("Killstreak:usedStep",stepNr)
+			Events:Unsubscribe('Player:UpdateInput')
+			Events:Unsubscribe('UpdateManager:Update')
+			Events:Unsubscribe('UI:DrawHud')
+			updateEvent = nil
+			drawHudEvent = nil
+		end	
+	end)
+end)
 
 Events:Subscribe('Player:UpdateInput', function()
 
@@ -80,7 +115,7 @@ Events:Subscribe('Player:UpdateInput', function()
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F) and pointOfAim.mode == FiringMode.Target then
 
-		NetEvents:SendLocal('vu-tactical-missle:Launch', pointOfAim.position)
+		NetEvents:SendLocal('vu-tactical-missile:Launch', pointOfAim.position)
 
 		targets[#targets+1] = { position = pointOfAim.position:Clone(), points = {}, timer = MISSILE_AIRTIME }
 	end	
@@ -124,7 +159,7 @@ Events:Subscribe('Engine:Update', function(dt)
 
 			targets[#targets+1] = pending[i]
 
-			NetEvents:SendLocal('vu-tactical-missle:Launch', pending[i].position)
+			NetEvents:SendLocal('vu-tactical-missile:Launch', pending[i].position)
 
 			table.remove(pending, i)
 		end

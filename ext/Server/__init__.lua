@@ -1,9 +1,9 @@
 
 local mortarPartitionGuid = Guid('5350B268-18C9-11E0-B820-CD6C272E4FCC')
 local customBlueprintGuid = Guid('D407033B-49AE-DF14-FE19-FC776AE04E2C')
-NetEvents:Subscribe('vu-tactical-missle:Launch', function(player, position)
+NetEvents:Subscribe('vu-tactical-missile:Launch', function(player, position)
 
-	position.y = position.y + 550
+	position.y = position.y + 650
 
 	local launchTransform = LinearTransform(
 		Vec3(0,  0, -1),
