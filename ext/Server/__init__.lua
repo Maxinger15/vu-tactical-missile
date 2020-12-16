@@ -17,11 +17,25 @@ NetEvents:Subscribe('vu-tactical-missile:Launch', function(player, position)
 	params.networked = true
 
 	local blueprint = VehicleBlueprint(ResourceManager:SearchForDataContainer("Vehicles/common/WeaponData/AGM-144_Hellfire_TV"))
-
+	blueprint:MakeWritable()
+	data = VehicleEntityData(blueprint.object)
+	data:MakeWritable()
+	data.resetTeamOnLastPlayerExits = false
+	blueprint.object = data
 	local projectileEntityBus = EntityBus(EntityManager:CreateEntitiesFromBlueprint(blueprint, params))
-
+	print(player.teamId)
 	for _,entity in pairs(projectileEntityBus.entities) do
-		entity = Entity(entity)
-		entity:Init(Realm.Realm_ClientAndServer, true)
+			entity:Init(Realm.Realm_ClientAndServer, true)
 	end
 end)
+
+--Hooks:Install('Soldier:Damage', 100, function(hook, soldier, info, giverInfo)
+	
+--	print(soldier.player.name)
+--	print(soldier.player.teamId)
+--	print("giver")
+--	print(giverInfo.weaponFiring.typeInfo.name)
+--	hook:Return()
+	
+    -- Do stuff here.
+--end)
