@@ -1,9 +1,9 @@
 
-local mortarPartitionGuid = Guid('5350B268-18C9-11E0-B820-CD6C272E4FCC')
+local mortarPartitionGuid = Guid('168F529B-17F6-11E0-8CD8-85483A75A7C5')
 local customBlueprintGuid = Guid('D407033B-49AE-DF14-FE19-FC776AE04E2C')
 NetEvents:Subscribe('vu-tactical-missile:Launch', function(player, position)
 
-	position.y = position.y + 650
+	position.y = position.y + 200
 
 	local launchTransform = LinearTransform(
 		Vec3(0,  0, -1),
@@ -16,16 +16,17 @@ NetEvents:Subscribe('vu-tactical-missile:Launch', function(player, position)
 	params.transform = launchTransform
 	params.networked = true
 
-	local blueprint = VehicleBlueprint(ResourceManager:SearchForDataContainer("Vehicles/common/WeaponData/AGM-144_Hellfire_TV"))
-	blueprint:MakeWritable()
-	data = VehicleEntityData(blueprint.object)
-	data:MakeWritable()
-	data.resetTeamOnLastPlayerExits = false
-	blueprint.object = data
+	local blueprint = ResourceManager:FindInstanceByGuid(mortarPartitionGuid,customBlueprintGuid)
+	--blueprint:MakeWritable()
+	--data = MissileEntityData(blueprint.object)
+	--data:MakeWritable()
+	--data.defaultTeam = player.teamId
+	--blueprint.object = data
 	local projectileEntityBus = EntityBus(EntityManager:CreateEntitiesFromBlueprint(blueprint, params))
 	print(player.teamId)
 	for _,entity in pairs(projectileEntityBus.entities) do
 			entity:Init(Realm.Realm_ClientAndServer, true)
+			print(entity.typeInfo.name)
 	end
 end)
 
